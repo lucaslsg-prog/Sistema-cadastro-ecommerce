@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import { Route, Redirect } from 'react-router-dom';
+import { AuthContext } from '../contexts/auth';
 
 export default function RouterWrapper({
     component: Component,
@@ -6,9 +8,8 @@ export default function RouterWrapper({
     ...rest
 }){
 
-    const loading = false;
-    const signed = false;
-
+    const { signed, loading } = useContext(AuthContext);
+    
     if(loading){
         return(
             <div></div>
