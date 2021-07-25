@@ -24,6 +24,40 @@ function AuthProvider({children}){
     }, [])
 
 
+    //Fazendo login do usuario
+  async function signIn(email, password){
+    setLoadingAuth(true);
+
+    await firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(async (value)=> {
+      let uid = value.user.uid;
+
+      const userProfile = await firebase.firestore().collection('users')
+      .doc(uid).get();
+
+      let data = {
+        uid: uid,
+        name: userProfile.data().name,
+        avatarUrl: userProfile.data().avatarUrl,
+        email: value.user.email
+      };
+
+      setUser(data);
+      storageUser(data);
+      setLoadingAuth(false);
+      //toast.success('Bem vindo de volta!');
+
+
+    })
+    .catch((error)=>{
+      console.log(error);
+      //toast.error('Ops algo deu errado!');
+      setLoadingAuth(false);
+    })
+
+  }
+
+
     //Cadastrando um novo usuario
   async function signUp(email, password, name){
     setLoadingAuth(true);
@@ -81,7 +115,9 @@ function AuthProvider({children}){
             user,
             loading,
             signUp,
-            signOut
+            signOut,
+            signIn,
+            loadingAuth
         }}>
             {children}
         </AuthContext.Provider>
